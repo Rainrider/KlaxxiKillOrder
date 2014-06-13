@@ -1,0 +1,8 @@
+## Interface: 50400
+## Title: Klaxxi Kill Order
+## Author: Rainrider
+## Version: 0.1
+
+## X-Credits: Ingenium@EU-Blackmoore
+
+KlaxxiKillOrder.lua
