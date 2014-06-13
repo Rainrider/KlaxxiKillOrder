@@ -1,5 +1,7 @@
 local addon, ns = ...
 
+local Debug = function() end
+
 local KLAXXI_ENCOUNTER_ID = 1593
 
 local klaxxiBosses = {
@@ -66,6 +68,7 @@ local MarkBoss = function(i, rtID)
 	local unit = "boss" .. i
 	if GetRaidTargetIndex(unit) ~= rtID then
 		SetRaidTarget(unit, rtID)
+		Debug("Marked", UnitName(unit), string.format("\124TInterface\\TargetingFrame\\UI-RaidTargetingIcon_%d:0\124t", rtID))
 	end
 end
 
@@ -88,6 +91,10 @@ function frame:ADDON_LOADED(name)
 	SLASH_KlaxxiKillOrder2 = "/klaxxikillorder"
 	SlashCmdList[name] = Command
 
+	if AdiDebug then
+		Debug = AdiDebug:Embed(self, name)
+	end
+
 	self:UnregisterEvent("ADDON_LOADED")
 end
 
@@ -96,6 +103,8 @@ function frame:ENCOUNTER_START(encounterID, _, difficultyID)
 
 	local _, _, isHeroic = GetDifficultyInfo(difficultyID)
 	priorities = isHeroic and klaxxiPriorities["hc"] or klaxxiPriorities["nhc"]
+
+	Debug("ENCOUNTER_START", encounterID, difficultyID, isHeroic)
 
 	self:RegisterEvent("ENCOUNTER_END")
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
@@ -107,6 +116,7 @@ function frame:ENCOUNTER_END()
 end
 
 function frame:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
+	Debug("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 
 	local activeBosses = {}
 
@@ -116,9 +126,11 @@ function frame:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 		local unit = "boss" .. i
 		if UnitExists(unit) then
 			activeBosses[klaxxiBosses[GetNummericGUID(unit)]] = i
+			Debug("Boss", i, (UnitName(unit)))
 		end
 	end
 
+	local match
 	for i = 1, #priorities do
 		local boss1, boss2, boss3, skull, cross = unpack(priorities[i])
 		if activeBosses[boss1] and (boss2 == 0 or activeBosses[boss2]) and (boss3 == 0 or activeBosses[boss3]) then
@@ -126,7 +138,9 @@ function frame:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 			if cross ~= 0 then
 				MarkBoss(activeBosses[cross], 7)
 			end
+			match = i
 			break
 		end
 	end
+	Debug("Matched priorities:", match)
 end
