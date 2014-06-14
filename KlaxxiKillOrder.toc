@@ -3,6 +3,6 @@
 ## Author: Rainrider
 ## Version: 0.1
 
-## X-Credits: Ingenium@EU-Blackmoore
+## X-Credits: Ingenium@EU-Blackmoore, KlaxxiTargets Copyright (c) 2014
 
 KlaxxiKillOrder.lua
