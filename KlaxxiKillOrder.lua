@@ -54,9 +54,7 @@ local klaxxiPriorities = {
 
 local priorities = {}
 
-local GetNummericGUID = function(unit)
-	return tonumber(string.sub(UnitGUID(unit), 6, 10), 16)
-end
+local GetNummericGUID
 
 local MarkBoss = function(i, rtID)
 	local unit = "boss" .. i
@@ -87,6 +85,16 @@ function frame:ADDON_LOADED(name)
 
 	if AdiDebug then
 		Debug = AdiDebug:Embed(self, name)
+	end
+	local toc = select(4, GetBuildInfo())
+	if toc < 60000 then
+		GetNummericGUID = function(unit)
+			return tonumber(string.sub(UnitGUID(unit), 6, 10), 16)
+		end
+	else
+		GetNummericGUID = function(unit)
+			return (select(6, strsplit("-", UnitGUID(unit))))
+		end
 	end
 
 	self:UnregisterEvent("ADDON_LOADED")
